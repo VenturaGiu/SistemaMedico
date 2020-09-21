@@ -15,8 +15,6 @@ class MedicoController extends Controller
     //retorna o médico de um id específico
     
     public function listarId(Medico $id){
-        // $medico = Medico::Where('crm', $crm)->first();
-        // return $crm;
         return $id;
     }
     
