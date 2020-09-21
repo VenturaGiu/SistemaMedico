@@ -43,28 +43,8 @@
                     </tr>
                 </thead>
                 <tbody id="tbodyId">
-                <?php
-                    if(count($medicos)) {
-                    $i = 0;
-                    foreach($medicos as $Medico) {
-                        $i++;
-                    ?>
-                    <?php if($i % 3 == 1) { ?>
-                    <tr>
-                    <?php } ?>
-                        <th scope="row"><?=$i?></th>
-                        <td><?=$Medico->crm?></td>
-                        <td><?=$Medico->nome?></td>
-                        <td id="phone_with_ddd"><?=$Medico->telefone?></td>
-                        <td><?=$Medico->especialidade?></td>
-                        <td><button type="button" class="btn btn-info" id="<?=$Medico->id?>" onclick="editar(<?=$Medico->id?>)">Editar</button></td>
-                        <td><button type="button" class="btn btn-danger" onclick="deletarMedico(<?=$Medico->id?>)">Excluir</button></td>
-                    </tr>
-                <?php if($i % 3 == 0) { ?>
+ 
                 </tbody>
-                <?php } } } else { ?>
-                    <strong>Nenhum Médico retornado pela API</strong>
-                <?php } ?>
             </table>
             
             <!-- Modal para cadastrar e editar um médico-->
@@ -168,28 +148,6 @@
                 </form>
             </div>
             </div>
-            </div>
-
-            <!-- modal de visualização da pesquisa -->
-            <div class="modal fade" id="modalPesquisaMedico" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-xl">
-                    <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div id="informacoesPesquisa" class="modal-body">
-                        
-                    
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Save changes</button>
-                    </div>
-                    </div>
-                </div>
             </div>
         </div>
         <!-- jQuery e Ajax, Popper.js, Bootstrap JS e Script -->

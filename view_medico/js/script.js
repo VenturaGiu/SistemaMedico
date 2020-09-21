@@ -1,4 +1,7 @@
-//var id médico 
+$(document).ready(function() {
+    listarTudo();
+});
+//var id médico para editar e excluir conteúdo
 var $id = 0;
 
 //var para verificação das CheckBox já cadastradas
@@ -49,12 +52,14 @@ $("#formCadastrar").submit(function(e) {
 
 //funções
 function editar(id) {
+
     if (id <= 0)
         return;
 
     lerPeloId(id, false);
 }
 
+//modal para cadastro
 function abrirModalCadastrar(reset = true) {
     $('#modalNovoMedico').modal('show');
 
@@ -62,18 +67,23 @@ function abrirModalCadastrar(reset = true) {
         limparForm();
 }
 
-function pegarIdPesquisa() {
-    var crmMedico = document.getElementById("inputPesquisar").value;
-    abrirPeloCrm(crmMedico);
-}
-
-function abrirModalPesquisa(data) {
-    $('#modalPesquisaMedico').modal('show');
-    visualizarModalPesquisa(data);
-}
-
 function fecharModalCadastrar() {
     $('#modalNovoMedico').modal('hide');
+}
+
+//recuperar valores dos input para GET de elementos específicos
+function pegarIdPesquisa() {
+    var crmMedico = document.getElementById("inputPesquisar").value;
+    var nomeMedico = document.getElementById("inputPesquisarNome").value;
+    if (crmMedico != "" && nomeMedico != "") {
+        alert("Pesquise um campo por vez!")
+    } else if (crmMedico == "" && nomeMedico == "") {
+        window.location.reload();
+    } else if (crmMedico != "") {
+        abrirPeloCrm(crmMedico);
+    } else if (nomeMedico != "") {
+        abrirPeloNome(nomeMedico);
+    }
 }
 
 function deletarMedico(id) {
@@ -129,6 +139,7 @@ function alterar(medico) {
     });
 }
 
+//limpar os valores do input ao abrir o modal para novo cadastro
 function limparForm() {
     $("#id").val("0");
     $("#txtCrm").val("");
@@ -196,6 +207,7 @@ function editarModal(data) {
     abrirModalCadastrar(false);
 }
 
+//pesquisar médico pelo crm
 function abrirPeloCrm(crmMedico) {
     $.ajax({
         url: "http://127.0.0.1:8000/api/medicos/crm/" + crmMedico,
@@ -203,27 +215,27 @@ function abrirPeloCrm(crmMedico) {
         data: {},
         dataType: "json",
         success: function(data) {
-
-            abrirModalPesquisa(data);
-
+            visualizarPesquisaCrm(data);
         }
     });
 }
 
-function abrirPeloNome(crmMedico) {
+//pesquisar médico pelo nome
+function abrirPeloNome(nomeMedico) {
     $.ajax({
-        url: "http://127.0.0.1:8000/api/medicos/nome/" + crmMedico,
+        url: "http://127.0.0.1:8000/api/medicos/nome/" + nomeMedico,
         type: "get",
         data: {},
         dataType: "json",
         success: function(data) {
 
-            abrirModalPesquisa(data);
+            visualizarPesquisaNome(data);
 
         }
     });
 }
 
+//listando todo o conteúdo da API
 function listarTudo() {
     $.ajax({
         url: "http://127.0.0.1:8000/api/medicos",
@@ -231,8 +243,7 @@ function listarTudo() {
         data: {},
         dataType: "json",
         success: function(data) {
-            // console.log(data);
-            // visualizarModalPesquisa(data);
+            visualizarTodosMedicos(data);
         },
         error: function() {
             alert("deu errado");
@@ -241,6 +252,7 @@ function listarTudo() {
 
 }
 
+//retorna as informações de cada id, auxiliando na edição e criação de médicos
 function lerPeloId(id, view) {
     $.ajax({
         url: "http://127.0.0.1:8000/api/medicos/" + id,
@@ -257,20 +269,10 @@ function lerPeloId(id, view) {
     });
 }
 
-function visualizarModalPesquisa(data) {
+//imprime na tela apenas o registro de determinado CRM
+function visualizarPesquisaCrm(data) {
     console.log(data);
-    document.getElementById("informacoesPesquisa").innerHTML = "<table class='table table-hover'>" +
-        "<thead>" +
-        "<tr>" +
-        "<th scope='col'>#</th>" +
-        "<th scope='col'>CRM</th>" +
-        "<th scope='col'>Nome</th>" +
-        "<th scope='col'>Telefone</th>" +
-        "<th scope='col'>Especialidade</th>" +
-        "<th scope='col'>Editar</th>" +
-        "<th scope='col'>Excluir</th>" +
-        "</tr>" +
-        "</thead>" +
+    document.getElementById("tbodyId").innerHTML =
         "<tbody id='tbodyId'><tr>" +
         "<th scope='row'></th>" +
         "<td>" + data.crm + "</td>" +
@@ -280,7 +282,59 @@ function visualizarModalPesquisa(data) {
         "<td><button type='button' class='btn btn-info' id='' onclick='editar()'>Editar</button></td>" +
         "<td><button type='button' class='btn btn-danger' onclick='deletarMedico()'>Excluir</button></td>" +
         "</tr>" +
-        "</tbody>" +
-        "</table>";
+        "</tbody>";
+
+}
+
+//imprime na tela apenas os registros de determinada letra ou nome
+function visualizarPesquisaNome(data) {
+    var table = document.getElementById("tbodyId");
+    table.innerHTML = "";
+    for (var i = 0; i < data.length; i++) {
+        page =
+            "<tbody id='tbodyId'><tr>" +
+            "<th scope='row'></th>" +
+            "<td>" + data[i].crm + "</td>" +
+            "<td>" + data[i].nome + "</td>" +
+            "<td id='phone_with_ddd'>" + data[i].telefone + "</td>" +
+            "<td>" + data[i].especialidade + "</td>" +
+            "<td><button type='button' class='btn btn-info' id='' onclick='editar()'>Editar</button></td>" +
+            "<td><button type='button' class='btn btn-danger' onclick='deletarMedico()'>Excluir</button></td>" +
+            "</tr>" +
+            "</tbody>";
+        table.innerHTML += page;
+    }
+}
+
+//imprime todos médicos da API
+function visualizarTodosMedicos(data) {
+    if (data.length < 1)
+        return;
+
+    var nomeMedico = document.getElementById("inputPesquisarNome").value;
+    var crmMedico = document.getElementById("inputPesquisar").value;
+    var table = document.getElementById("tbodyId");
+    table.innerHTML = "";
+
+    if (crmMedico == "" && nomeMedico == "") {
+        for (var i = 0; i < data.length; i++) {
+            var page =
+                "<tbody id='tbodyId'><tr>" +
+                "<th scope='row'></th>" +
+                "<td>" + data[i].crm + "</td>" +
+                "<td>" + data[i].nome + "</td>" +
+                "<td id='phone_with_ddd'>" + data[i].telefone + "</td>" +
+                "<td>" + data[i].especialidade + "</td>" +
+                "<td><button type='button' class='btn btn-info' id='' onclick='editar(" + data[i].id + ")'>Editar</button></td>" +
+                "<td><button type='button' class='btn btn-danger' onclick='deletarMedico(" + data[i].id + ")'>Excluir</button></td>" +
+                "</tr>" +
+                "</tbody>";
+            table.innerHTML += page;
+        }
+    } else if (crmMedico != "") {
+        visualizarPesquisaCrm();
+    } else if (nomeMedico != "") {
+        visualizarPesquisaNome();
+    }
 
 }
