@@ -14,15 +14,30 @@ class MedicoController extends Controller
     } 
     //retorna o médico de um id específico
     
+    public function listarId(Medico $id){
+        // $medico = Medico::Where('crm', $crm)->first();
+        // return $crm;
+        return $id;
+    }
+    
     /**  
      * @param string $crm
      * 
      * 
        */
-    public function listarId(Request $request, $crm){
+    public function listarCrm(Request $request, $crm){
         $medico = Medico::Where('crm', $crm)->first();
-        // return $crm;
         return $medico;
+    }
+
+    /**  
+     * @param string $nome
+     * 
+     * 
+       */
+      public function listarNome(Request $request, $nome){
+          $medico = Medico::Where('nome', 'like', '%' . $nome . '%')->get();
+          return $medico;
     }
 
     public function add(Request $request){
@@ -40,10 +55,10 @@ class MedicoController extends Controller
      * 
      * 
        */
-    public function update(Request $request, $crm){
+    public function update(Request $request, $id){
         try {
             $MedicoData = $request->all();
-            $medico = Medico::Where('crm', $crm)->first();
+            $medico = Medico::find($id);
             $medico->update($MedicoData);
             return response()->json(['msg' => 'Dados atualizados com sucesso!'], 201);
         } catch (\Exception $e) {
@@ -56,11 +71,11 @@ class MedicoController extends Controller
      * 
      * 
        */
-    public function delete(Request $request, $crm){
+    public function delete(Medico $id){
         try {
-            $medico = Medico::Where('crm', $crm)->first();
-            $medico->delete();
-            return response()->json(['msg' => 'Produto médico deletado com sucesso!'], 201);
+            // $medico = Medico::Where('crm', $crm)->first();
+            $id->delete();
+            return response()->json(['msg' => 'Médico deletado com sucesso!'], 201);
         } catch (\Exception $e) {
             return $e;
         }
